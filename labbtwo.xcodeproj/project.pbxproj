@@ -11,6 +11,8 @@
 		3D753E0727369579009F83B1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D753E0627369579009F83B1 /* ContentView.swift */; };
 		3D753E092736957A009F83B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D753E082736957A009F83B1 /* Assets.xcassets */; };
 		3D753E0C2736957A009F83B1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D753E0B2736957A009F83B1 /* Preview Assets.xcassets */; };
+		3D753E132736A7C2009F83B1 /* ResturantModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D753E122736A7C2009F83B1 /* ResturantModel.swift */; };
+		3D753E152736A94A009F83B1 /* restaurants.json in Resources */ = {isa = PBXBuildFile; fileRef = 3D753E142736A94A009F83B1 /* restaurants.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +21,8 @@
 		3D753E0627369579009F83B1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3D753E082736957A009F83B1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3D753E0B2736957A009F83B1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		3D753E122736A7C2009F83B1 /* ResturantModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResturantModel.swift; sourceTree = "<group>"; };
+		3D753E142736A94A009F83B1 /* restaurants.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = restaurants.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +39,7 @@
 		3D753DF827369579009F83B1 = {
 			isa = PBXGroup;
 			children = (
+				3D753E122736A7C2009F83B1 /* ResturantModel.swift */,
 				3D753E0327369579009F83B1 /* labbtwo */,
 				3D753E0227369579009F83B1 /* Products */,
 			);
@@ -51,6 +56,7 @@
 		3D753E0327369579009F83B1 /* labbtwo */ = {
 			isa = PBXGroup;
 			children = (
+				3D753E142736A94A009F83B1 /* restaurants.json */,
 				3D753E0427369579009F83B1 /* labbtwoApp.swift */,
 				3D753E0627369579009F83B1 /* ContentView.swift */,
 				3D753E082736957A009F83B1 /* Assets.xcassets */,
@@ -126,6 +132,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D753E0C2736957A009F83B1 /* Preview Assets.xcassets in Resources */,
+				3D753E152736A94A009F83B1 /* restaurants.json in Resources */,
 				3D753E092736957A009F83B1 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,6 +144,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D753E132736A7C2009F83B1 /* ResturantModel.swift in Sources */,
 				3D753E0727369579009F83B1 /* ContentView.swift in Sources */,
 				3D753E0527369579009F83B1 /* labbtwoApp.swift in Sources */,
 			);
