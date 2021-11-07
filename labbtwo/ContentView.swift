@@ -40,6 +40,23 @@ struct Restaurant: Decodable, Identifiable, Hashable {
     let menu: String
 }
 
+struct FavoritesView: View {
+    let favorites: [Restaurant]
+    var body: some View {
+
+        Section(header: Text("Your favorites")){
+            ForEach(favorites, id: \.self) { favorite in
+                Text("Your favorites")
+                HStack {
+                    Text(favorite.name)
+                    Text(favorite.telefon)
+                }
+            }
+        }
+    
+    }
+}
+
 struct RestaurantView: View {
     let restaurant: Restaurant
     
@@ -50,18 +67,21 @@ struct RestaurantView: View {
         } placeholder: {
             ProgressView()
         }
-        .frame(width: 300, height: 400)
+        .frame(width: 300, height: 200)
         .border(Color.blue)
         
     
         List {
             Section(header: Text("Telefon")) {
-                Text("Telefon\n: \(restaurant.telefon)")
+                Text("\(restaurant.telefon)")
             }
-                Text("Information\n:  \(restaurant.description)")
-                Text("Meny\n: \(restaurant.menu)")
-                .padding()
+            Section(header: Text("Information")) {
+                Text("\(restaurant.description)")
             }
+            Section(header: Text("Meny")) {
+                Text("\(restaurant.menu)")
+            }
+        }
     }
 }
 
@@ -70,31 +90,29 @@ struct ContentView: View {
     @State private var favorites: [Restaurant] = []
     var body: some View {
         NavigationView {
-            VStack {
-                ForEach(restaurants, id: \.self) { restaurant in
-                        Text(restaurant.name)
-                        .fontWeight(Font.Weight.heavy)
-                        Text(restaurant.telefon)
-                        NavigationLink("Further Details", destination: RestaurantView(restaurant: restaurant))
-                    
-                        Button {
-                            self.addRestaurant(restaurant: restaurant)
-                        } label: {
-                            Text("Add to favorites")
-                                .foregroundColor(Color.white)
+        ZStack {
+            VStack (alignment: .leading) {
+                List {
+                    Section(header: Text("All restaurants")){
+                        ForEach(restaurants, id: \.self) { restaurant in
+                            HStack {
+                                Text(restaurant.name)
+                                    .fontWeight(Font.Weight.heavy)
+                                Spacer()
+                                Image(systemName: "plus.square")
+                            }
+                            Text(restaurant.telefon)
+                            NavigationLink("Further Details", destination: RestaurantView(restaurant: restaurant))
                         }
-                        .padding()
-                        .border(Color.green)
-                        .clipped()
-                        .background(Color.blue)
+                    }
+                    FavoritesView(favorites: favorites)
                 }
-                Spacer()
             }
-            .navigationTitle("Restaurants 4 you")
+            //.background(Color(red: 245 / 255 , green: 245 / 255 , blue: 245 / 255))
+        }
+            .navigationTitle("Restaurants 4U")
             .onAppear(perform: readFile)
         }
-            
-        .navigationTitle("Restaurants")
     }
     private func readFile() {
         if let url = Bundle.main.url(forResource: "restaurants", withExtension: "json"),
