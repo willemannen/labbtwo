@@ -8,54 +8,54 @@
 import SwiftUI
 import Combine
 
-/*final class Resturant: ObservableObject, Identifiable {
-    let id = UUID()
-    @Published var name: String
-    @Published var description: String
-    @Published var image: String
-    @Published var menu: String
-    @Published var phone: String
-
-    init(name: String, description: String, image: String, menu: String, phone: String){
-        self.name = name
-        self.description = description
-        self.image = image
-        self.menu = menu
-        self.phone = phone
-    }
-}*/
+// youtube.com/watch?v=bMKpsmvYkKQ
+// stackoverflow.com/questions/60677622/how-to-display-image-from-a-url-in-swiftui
 
 struct JSONData: Decodable {
     let restaurants: [Restaurant]
 }
-// youtube.com/watch?v=bMKpsmvYkKQ
-// stackoverflow.com/questions/60677622/how-to-display-image-from-a-url-in-swiftui
 
-struct Restaurant: Decodable, Identifiable, Hashable {
+struct dayAndHour {
+    let day: String
+    let hour: String
+}
+
+struct Restaurant: Decodable, Hashable {
     let id: Int
     let name: String
     let description: String
     let image: String
     let telefon: String
     let menu: String
+    let categories: [String]
+    let opening_hours: [String: String]
+    let location: [String: Double]
+ 
 }
 
+
 struct FavoritesView: View {
-    let favorites: [Restaurant]
+    @Binding var favorites: [Restaurant]
     var body: some View {
 
         Section(header: Text("Your favorites")){
-            ForEach(favorites, id: \.self) { favorite in
-                Text("Your favorites")
+            ForEach(Array(zip(favorites.indices, favorites)), id: \.0) { (index, favorite) in
                 HStack {
                     Text(favorite.name)
+                    Spacer()
                     Text(favorite.telefon)
+                    Button {
+                        favorites.remove(at: index)
+                    } label: {
+                        Image(systemName: "minus.square")
+                    }
                 }
             }
         }
     
     }
 }
+
 
 struct RestaurantView: View {
     let restaurant: Restaurant
@@ -81,6 +81,77 @@ struct RestaurantView: View {
             Section(header: Text("Meny")) {
                 Text("\(restaurant.menu)")
             }
+            Section(header: Text("Opening Hours")) {
+                ForEach(restaurant.opening_hours.keys.sorted(by: sortedWeekDay), id: \.self) { openDay in
+                    HStack {
+                        Text(openDay)
+                        Spacer()
+                        Text(restaurant.opening_hours[openDay]!)
+                    }
+                }
+            }
+            Section(header: Text("Categories")) {
+                ForEach(restaurant.categories, id: \.self) { category in
+                    Text(category)
+                }
+            }
+        }
+    }
+    private func sortedWeekDay(first: String, second: String) -> Bool {
+        let weekDaysSorted = [
+            "mon": 6,
+            "tue": 5,
+            "wed": 4,
+            "thu": 3,
+            "fri": 2,
+            "sat": 1,
+            "sun": 0
+        ]
+        
+        return weekDaysSorted[first]! > weekDaysSorted[second]!
+    }
+    /*
+    private func getSortedOpeningDays(restaurant: Restaurant) -> [[String]]
+    {
+        
+        var sorted: [[String]] = [[]]
+        let weekDaysSorted = [
+            "mon",
+            "tue",
+            "wed",
+            "thu",
+            "fri",
+            "sat",
+            "sun",
+        ]
+        
+        for weekDay in weekDaysSorted {
+            let dayStr = weekDay
+            let openingTimeStr = restaurant.opening_hours[dayStr]!
+            sorted.append([dayStr, openingTimeStr])
+        }
+        return sorted
+    }*/
+}
+
+
+struct RandomRestaurantView: View {
+    @Binding var restaurants: [Restaurant]
+    @State var randomRestaurant: Restaurant?
+
+    
+    var body: some View
+    {
+        Button {
+                randomRestaurant = restaurants.randomElement()!
+            }
+         label: {
+             VStack {
+                 if randomRestaurant != nil {
+                     NavigationLink(randomRestaurant!.name, destination: RestaurantView(restaurant: randomRestaurant!))
+                 }
+                 Circle()
+             }
         }
     }
 }
@@ -92,29 +163,38 @@ struct ContentView: View {
         NavigationView {
         ZStack {
             VStack (alignment: .leading) {
+                NavigationLink("I am lucky", destination: RandomRestaurantView(restaurants: $restaurants, randomRestaurant: nil))
+
                 List {
+                    
                     Section(header: Text("All restaurants")){
                         ForEach(restaurants, id: \.self) { restaurant in
                             HStack {
                                 Text(restaurant.name)
                                     .fontWeight(Font.Weight.heavy)
                                 Spacer()
-                                Image(systemName: "plus.square")
+                                Button {
+                                    if !isFavorited(restaurant: restaurant){
+                                        self.addRestaurantToFavorite(restaurant: restaurant)
+                                    }
+                                } label: {
+                                    Image(systemName: "plus.square")
+                                }
                             }
                             Text(restaurant.telefon)
                             NavigationLink("Further Details", destination: RestaurantView(restaurant: restaurant))
                         }
                     }
-                    FavoritesView(favorites: favorites)
+                    FavoritesView(favorites: $favorites)
                 }
             }
-            //.background(Color(red: 245 / 255 , green: 245 / 255 , blue: 245 / 255))
         }
             .navigationTitle("Restaurants 4U")
             .onAppear(perform: readFile)
         }
     }
     private func readFile() {
+        print("HEHE")
         if let url = Bundle.main.url(forResource: "restaurants", withExtension: "json"),
            let data = try? Data(contentsOf: url) {
             let decoder = JSONDecoder()
@@ -124,8 +204,14 @@ struct ContentView: View {
             }
         }
     }
-    private func addRestaurant(restaurant: Restaurant) {
+    
+    private func addRestaurantToFavorite(restaurant: Restaurant) {
         favorites.append(restaurant)
+    }
+    
+    private func isFavorited(restaurant: Restaurant) -> Bool {
+        let isRestaurantFavorited = favorites.contains(restaurant)
+        return isRestaurantFavorited
     }
 }
 

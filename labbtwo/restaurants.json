@@ -8,7 +8,7 @@
       "url": "https://bastardburgers.com/se/restaurants/jonkoping/",
       "menu": "https://bastardburgers.com/se/meny/",
       "telefon": "036-501 10",
-      "category": ["Burgers", "American"],
+      "categories": ["Burgers", "American"],
       "opening_hours": {
         "mon": "11:00 - 20:00",
         "tue": "11:00 - 20:00",
