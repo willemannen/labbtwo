@@ -7,20 +7,23 @@
 
 import SwiftUI
 import Combine
-
+// Sources
 // youtube.com/watch?v=bMKpsmvYkKQ
 // stackoverflow.com/questions/60677622/how-to-display-image-from-a-url-in-swiftui
+// developer.apple.com/documentation/foundation/archives_and_serialization/encoding_and_decoding_custom_types
+
+let userDefaults = UserDefaults.standard
 
 struct JSONData: Decodable {
     let restaurants: [Restaurant]
 }
 
-struct dayAndHour {
-    let day: String
-    let hour: String
+struct Location: Codable, Hashable {
+    let latitude: Double
+    let longitude: Double
 }
 
-struct Restaurant: Decodable, Hashable {
+struct Restaurant: Codable, Hashable {
     let id: Int
     let name: String
     let description: String
@@ -29,7 +32,7 @@ struct Restaurant: Decodable, Hashable {
     let menu: String
     let categories: [String]
     let opening_hours: [String: String]
-    let location: [String: Double]
+    let location: Location
  
 }
 
@@ -46,6 +49,7 @@ struct FavoritesView: View {
                     Text(favorite.telefon)
                     Button {
                         favorites.remove(at: index)
+                        userDefaults.saveEncodedFavorites(favoriteRestaurants: favorites)
                     } label: {
                         Image(systemName: "minus.square")
                     }
@@ -95,6 +99,10 @@ struct RestaurantView: View {
                     Text(category)
                 }
             }
+            Section(header: Text("Coordinates")) {
+                Text("Longitude: \(restaurant.location.longitude)")
+                Text("Latitude: \(restaurant.location.latitude)")
+            }
         }
     }
     private func sortedWeekDay(first: String, second: String) -> Bool {
@@ -107,7 +115,6 @@ struct RestaurantView: View {
             "sat": 1,
             "sun": 0
         ]
-        
         return weekDaysSorted[first]! > weekDaysSorted[second]!
     }
     /*
@@ -139,7 +146,6 @@ struct RandomRestaurantView: View {
     @Binding var restaurants: [Restaurant]
     @State var randomRestaurant: Restaurant?
 
-    
     var body: some View
     {
         Button {
@@ -156,9 +162,26 @@ struct RandomRestaurantView: View {
     }
 }
 
+
+extension UserDefaults {
+    func getDecodedFavorites() -> Array<Restaurant> {
+        if let dataRestaurant = UserDefaults.standard.value(forKey:"favorites") as? Data {
+            let favorites = try? PropertyListDecoder().decode(Array<Restaurant>.self, from: dataRestaurant)
+            return favorites ?? Array<Restaurant>()
+        }
+    return Array<Restaurant>()
+    }
+    
+    func saveEncodedFavorites(favoriteRestaurants: [Restaurant]) {
+        UserDefaults.standard.set(try? PropertyListEncoder().encode(favoriteRestaurants), forKey:"favorites")
+    }
+}
+
+
 struct ContentView: View {
     @State private var restaurants: [Restaurant] = []
-    @State private var favorites: [Restaurant] = []
+    @State private var favorites = userDefaults.getDecodedFavorites()
+    //userDefaults.object(forKey: "favorites") as? [Restaurant] ?? [Restaurant]()
     var body: some View {
         NavigationView {
         ZStack {
@@ -166,7 +189,6 @@ struct ContentView: View {
                 NavigationLink("I am lucky", destination: RandomRestaurantView(restaurants: $restaurants, randomRestaurant: nil))
 
                 List {
-                    
                     Section(header: Text("All restaurants")){
                         ForEach(restaurants, id: \.self) { restaurant in
                             HStack {
@@ -176,6 +198,7 @@ struct ContentView: View {
                                 Button {
                                     if !isFavorited(restaurant: restaurant){
                                         self.addRestaurantToFavorite(restaurant: restaurant)
+                                        userDefaults.saveEncodedFavorites(favoriteRestaurants: favorites)
                                     }
                                 } label: {
                                     Image(systemName: "plus.square")
@@ -194,7 +217,6 @@ struct ContentView: View {
         }
     }
     private func readFile() {
-        print("HEHE")
         if let url = Bundle.main.url(forResource: "restaurants", withExtension: "json"),
            let data = try? Data(contentsOf: url) {
             let decoder = JSONDecoder()
