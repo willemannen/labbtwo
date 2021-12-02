@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import MapKit
 // Sources
 // youtube.com/watch?v=bMKpsmvYkKQ
 // stackoverflow.com/questions/60677622/how-to-display-image-from-a-url-in-swiftui
@@ -33,7 +34,6 @@ struct Restaurant: Codable, Hashable {
     let categories: [String]
     let opening_hours: [String: String]
     let location: Location
- 
 }
 
 
@@ -59,8 +59,16 @@ struct FavoritesView: View {
     
     }
 }
-
-
+/*
+struct restaurantMapView: View {
+    @State private var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: restaurant.location.latitude, longitude: restaurant.location.longitude), span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5))
+    var body: some View {
+        Map(coordinateRegion: $region)
+            .frame(width: 400, height: 300)
+    }
+}
+*/
+ 
 struct RestaurantView: View {
     let restaurant: Restaurant
     
@@ -99,7 +107,7 @@ struct RestaurantView: View {
                     Text(category)
                 }
             }
-            Section(header: Text("Coordinates")) {
+            Section(header: Text("Map")) {
                 Text("Longitude: \(restaurant.location.longitude)")
                 Text("Latitude: \(restaurant.location.latitude)")
             }
@@ -117,28 +125,6 @@ struct RestaurantView: View {
         ]
         return weekDaysSorted[first]! > weekDaysSorted[second]!
     }
-    /*
-    private func getSortedOpeningDays(restaurant: Restaurant) -> [[String]]
-    {
-        
-        var sorted: [[String]] = [[]]
-        let weekDaysSorted = [
-            "mon",
-            "tue",
-            "wed",
-            "thu",
-            "fri",
-            "sat",
-            "sun",
-        ]
-        
-        for weekDay in weekDaysSorted {
-            let dayStr = weekDay
-            let openingTimeStr = restaurant.opening_hours[dayStr]!
-            sorted.append([dayStr, openingTimeStr])
-        }
-        return sorted
-    }*/
 }
 
 
@@ -162,7 +148,7 @@ struct RandomRestaurantView: View {
     }
 }
 
-
+//stackoverflow.com/questions/44876420/save-struct-to-userdefaults
 extension UserDefaults {
     func getDecodedFavorites() -> Array<Restaurant> {
         if let dataRestaurant = UserDefaults.standard.value(forKey:"favorites") as? Data {
@@ -181,7 +167,7 @@ extension UserDefaults {
 struct ContentView: View {
     @State private var restaurants: [Restaurant] = []
     @State private var favorites = userDefaults.getDecodedFavorites()
-    //userDefaults.object(forKey: "favorites") as? [Restaurant] ?? [Restaurant]()
+    
     var body: some View {
         NavigationView {
         ZStack {
